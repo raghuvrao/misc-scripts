@@ -1,0 +1,9 @@
+#!/bin/bash
+
+shopt -u dotglob
+
+list_1=( "${HOME}"/* )
+list_2=( "${HOME}"/.android "${HOME}"/.dosbox )
+
+# mount the partition at /mnt/backup
+rsync -av --sparse --delete-after "${list_1[@]}" "${list_2[@]}" /mnt/backup/raghu/

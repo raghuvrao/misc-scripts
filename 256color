@@ -1,0 +1,65 @@
+#!/bin/bash
+
+doit()
+{
+    local column=0
+    local row=0
+    local i=0
+
+    if [[ ${1} == fg ]]; then
+        setabf="setaf"
+    else
+        setabf="setab"
+    fi
+
+    # Standard 16 colors
+    for ((i = 0; i < 8; i++)); do
+        tput ${setabf} ${i} 2>/dev/null
+        printf "%5d" "${i}"
+        tput sgr0 2>/dev/null
+    done
+    tput sgr0 2>/dev/null
+    printf "\n"
+    for ((i = 8; i < 16; i++)); do
+        tput ${setabf} ${i} 2>/dev/null
+        printf "%5d" "${i}"
+        tput sgr0 2>/dev/null
+    done
+    tput sgr0 2>/dev/null
+    printf "\n\n\n"
+
+    # The "extended" set for 256-color terminals
+    for ((i = 16; i < 232; i++)); do
+        tput ${setabf} ${i} 2>/dev/null
+        printf "%5d" "${i}"
+        tput sgr0 2>/dev/null
+        column=$((column+1))
+        [[ ${column} -eq 6 ]] && {
+            column=0
+            row=$((row+1))
+            [[ ${row} -eq 6 ]] && {
+                printf "\n"
+                row=0
+            }
+            printf "\n"
+        }
+    done
+    printf "\n"
+
+    # The grayscale ramp
+    tput sgr0 2>/dev/null
+    for ((i = 232; i < 256; i++)); do
+        tput ${setabf} ${i} 2>/dev/null
+        printf "%4d" "${i}"
+        tput sgr0 2>/dev/null
+    done
+    tput sgr0 2>/dev/null
+    printf "\n"
+}
+
+if [[ "${TERM}" == *256color* ]]; then
+    doit ${1}
+else
+    printf "TERM is not like *256color*; exiting\n" >&2
+    exit 1
+fi
