@@ -1,0 +1,31 @@
+#!/bin/bash
+
+set -e
+
+string1="g90ODB8S5Il1|rnm"
+d="$(tput sgr0)"
+b="$(tput bold)"
+
+do_it()
+{
+    if [[ -z "${1}" ]]; then
+      c=""
+      b=""
+    else
+      c="$(tput setaf ${1})"
+      b="$(tput setab ${1})"
+    fi
+    printf "%s%60d%s" "${b}" "${1}" "${d}"
+    printf " %s%s%s\n\n" "${c}" "${string1}" "${d}"
+}
+
+echo -e "${d}"
+if [[ "${1}" =~ [0-9]+ ]]; then
+  do_it ${1}
+else
+  do_it
+  for i in {0..255}; do
+      do_it ${i}
+  done
+fi
+echo -e "${d}"
