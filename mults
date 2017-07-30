@@ -1,0 +1,77 @@
+#!/usr/bin/env python
+
+
+import argparse
+
+
+class Multiples(object):
+    """
+    Represents a list of multiples of a number
+    """
+
+    def __init__(self, number=0, end=0, start=1, remainder=0):
+        self.multiples = None
+        self.number = number
+        self.start = start
+        self.end = end
+        self.remainder = remainder
+
+    def set(self, **kwargs):
+        if 'remainder' in kwargs:
+            self.remainder = kwargs['remainder']
+        if 'start' in kwargs:
+            self.start = kwargs['start']
+        if 'end' in kwargs:
+            self.end = kwargs['end']
+        if 'number' in kwargs:
+            self.number = kwargs['number']
+
+    def refresh(self):
+        if self.start >= self.end:
+            return None
+
+        self.multiples = (z for z in xrange(self.start, self.end+1)
+                          if z % self.number == self.remainder)
+        return self.multiples
+
+    def __str__(self):
+        d = {}
+        d['multiples'] = self.multiples
+        d['number'] = self.number
+        d['start'] = self.start
+        d['end'] = self.end
+        d['remainder'] = self.remainder
+        return str(d)
+
+    def show_multiples(self):
+        if self.multiples is None:
+            return 1
+        else:
+            for mult in self.multiples:
+                print str(mult),
+        return 0
+
+
+def main():
+    parser = argparse.ArgumentParser(description='generate multiples of a number')
+    parser.add_argument('number', help='number whose multiples to generate', type=int)
+    parser.add_argument('end', help='upper limit of multiples', type=int)
+    parser.add_argument('-s', '--start', help='lower limit of multiples (default=1)', type=int)
+    parser.add_argument('-r', '--remainder', type=int,
+                        help='generate "multiples" that yield this remainder (default=0)')
+    args = parser.parse_args()
+
+    m = Multiples()
+
+    m.set(number=args.number)
+    m.set(end=args.end)
+    if args.start:
+        m.set(start=args.start)
+    if args.remainder:
+        m.set(remainder=args.remainder)
+    m.refresh()
+    return m.show_multiples()
+
+
+if __name__ == '__main__':
+    main()

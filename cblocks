@@ -1,0 +1,7 @@
+#!/bin/bash
+
+string="█ ██ ███ g9 S5 rnm 0O B8 Il|"
+if [[ "${1}" =~ [0-9]+ ]]; then color="$(tput setaf ${1})"; else color=""; fi
+if [[ "${2}" == b ]]; then bold="$(tput bold)"; else bold=""; fi
+rst="$(tput sgr0)"
+echo -e "${rst}${color}${bold}${string}${rst} ${1}"
