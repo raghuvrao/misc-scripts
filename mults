@@ -1,77 +1,98 @@
 #!/usr/bin/env python
 
 
+from __future__ import print_function
+
 import argparse
+import sys
 
 
-class Multiples(object):
-    """
-    Represents a list of multiples of a number
-    """
+def multiples_by_upper_limit(number, lower_limit, upper_limit, remainder):
+    # This check is valid because we are dealing with only natural numbers.
+    if number <= remainder:
+        raise StopIteration
 
-    def __init__(self, number=0, end=0, start=1, remainder=0):
-        self.multiples = None
-        self.number = number
-        self.start = start
-        self.end = end
-        self.remainder = remainder
+    if upper_limit < number:
+        raise StopIteration
 
-    def set(self, **kwargs):
-        if 'remainder' in kwargs:
-            self.remainder = kwargs['remainder']
-        if 'start' in kwargs:
-            self.start = kwargs['start']
-        if 'end' in kwargs:
-            self.end = kwargs['end']
-        if 'number' in kwargs:
-            self.number = kwargs['number']
+    if lower_limit < number:
+        lower_limit = number
 
-    def refresh(self):
-        if self.start >= self.end:
-            return None
+    s = lower_limit - (lower_limit % number)
+    m = s + remainder
+    while m < lower_limit:
+        m += number
 
-        self.multiples = (z for z in xrange(self.start, self.end+1)
-                          if z % self.number == self.remainder)
-        return self.multiples
+    while m <= upper_limit:
+        yield m
+        m += number
 
-    def __str__(self):
-        d = {}
-        d['multiples'] = self.multiples
-        d['number'] = self.number
-        d['start'] = self.start
-        d['end'] = self.end
-        d['remainder'] = self.remainder
-        return str(d)
 
-    def show_multiples(self):
-        if self.multiples is None:
-            return 1
-        else:
-            for mult in self.multiples:
-                print str(mult),
-        return 0
+def multiples_by_count(number, lower_limit, count, remainder):
+    # This check is valid because we are dealing with only natural numbers.
+    if number <= remainder:
+        raise StopIteration
+
+    if lower_limit < number:
+        lower_limit = number
+
+    s = lower_limit - (lower_limit % number)
+    m = s + remainder
+    while m < lower_limit:
+        m += number
+
+    for i in xrange(count):
+        yield m
+        m += number
 
 
 def main():
     parser = argparse.ArgumentParser(description='generate multiples of a number')
     parser.add_argument('number', help='number whose multiples to generate', type=int)
-    parser.add_argument('end', help='upper limit of multiples', type=int)
-    parser.add_argument('-s', '--start', help='lower limit of multiples (default=1)', type=int)
-    parser.add_argument('-r', '--remainder', type=int,
-                        help='generate "multiples" that yield this remainder (default=0)')
+    parser.add_argument('-l', '--lower-limit', help='lower limit of output numbers', type=int)
+    parser.add_argument('-r', '--remainder', help='generate "multiples" that yield this remainder', type=int)
+    num_multiples_group = parser.add_mutually_exclusive_group()
+    num_multiples_group.add_argument('-c', '--count', help='number of multiples', type=int)
+    num_multiples_group.add_argument('-u', '--upper-limit', help='upper limit of output numbers', type=int)
     args = parser.parse_args()
 
-    m = Multiples()
+    number = args.number
+    if number <= 0:
+        print("number: want non-zero natural number, got {0}".format(number), file=sys.stderr)
+        return 1
 
-    m.set(number=args.number)
-    m.set(end=args.end)
-    if args.start:
-        m.set(start=args.start)
-    if args.remainder:
-        m.set(remainder=args.remainder)
-    m.refresh()
-    return m.show_multiples()
+    remainder = 0
+    if args.remainder is not None:  # Treat None and 0 differently.
+        remainder = args.remainder
+        if remainder < 0:
+            print("remainder: want natural number, got {0}".format(remainder), file=sys.stderr)
+            return 1
+
+    lower_limit = 1
+    if args.lower_limit is not None:
+        lower_limit = args.lower_limit
+        if lower_limit <= 0:
+            print("lower limit: want non-zero natural number, got {0}".format(lower_limit), file=sys.stderr)
+            return 1
+
+    count = args.count
+    upper_limit = args.upper_limit
+    if count is not None:  # Treat None and 0 differently.
+        if count <= 0:
+            print("count: want non-zero natural number, got {0}".format(count), file=sys.stderr)
+            return 1
+        print(" ".join(str(m) for m in multiples_by_count(number, lower_limit, count, remainder)))
+    elif upper_limit is not None:  # Treat None and 0 differently.
+        if upper_limit <= 0:
+            print("upper limit: want non-zero natural number, got {0}".format(upper_limit), file=sys.stderr)
+            return 1
+        print(" ".join(str(m) for m in multiples_by_upper_limit(number, lower_limit, upper_limit, remainder)))
+    else:
+        # Both count and upper_limit are None.  Default to 10 multiples.
+        print(" ".join(str(m) for m in multiples_by_count(number, lower_limit, 10, remainder)))
+
+    return 0
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
