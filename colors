@@ -14,7 +14,7 @@ do_it()
 echo -e "${d}"
 do_it
 #echo -e "  ${string1}${d}${b}${c}${string1}${d} ${c}${string2}${d} ${b}${c}${string2}${d}"
-for i in {0..7}; do
+for i in {0..15}; do
     do_it ${i}
 done
 echo -e "${d}"
