@@ -1,14 +1,16 @@
 #!/bin/bash
 
-string1="████████"
+string1=" Hello! "
 string2="0ODB8S5Il1|rnm"
 d="$(tput sgr0)"
 b="$(tput bold)"
 
 do_it()
 {
+    if [[ "${1}" =~ [0-9]+ ]]; then c="$(tput setab ${1})"; else c=""; fi
+    echo -n -e "${c}${string1}${d} ${b}${c}${string1}${d} "
     if [[ "${1}" =~ [0-9]+ ]]; then c="$(tput setaf ${1})"; else c=""; fi
-    echo -e "${c}${string1}${d}${b}${c}${string1}${d} ${c}${string2}${d} ${b}${c}${string2}${d} ${1}"
+    echo -e "${c}${string2}${d} ${b}${c}${string2}${d} ${1}"
 }
 
 echo -e "${d}"

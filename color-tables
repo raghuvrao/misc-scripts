@@ -1,14 +1,29 @@
-#!/bin/sh
+#!/bin/bash
 
-for color1 in 1 2 3 4 5 6 7; do
-    for color2 in 0 1 2 3 4 5 6 7 8; do
-        tput setaf ${color1}
-        tput setab ${color2}
-        echo -n "wGy"
-        tput bold
-        echo -n " wGy"
-        tput sgr0
-        echo -n " "
-    done
-    echo
-done
+text=" hi!"
+d="$(tput sgr0 2>/dev/null)"
+bo="$(tput bold 2>/dev/null)"
+
+do_it()
+{
+	for f in {0..15}; do
+		fg="$(tput setaf ${f} 2>/dev/null)"
+		for b in {0..7}; do
+			bg="$(tput setab ${b} 2>/dev/null)"
+			echo -n -e "${d}${bg}${fg}${text}${d}${bo}${bg}${fg}${text} ${d}"
+		done
+		echo
+	done
+	for f in {0..15}; do
+		fg="$(tput setaf ${f} 2>/dev/null)"
+		for b in {8..15}; do
+			bg="$(tput setab ${b} 2>/dev/null)"
+			echo -n -e "${d}${bg}${fg}${text}${d}${bo}${bg}${fg}${text} ${d}"
+		done
+		echo
+	done
+}
+
+echo -e "${d}"
+do_it
+echo -e "${d}"
