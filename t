@@ -31,8 +31,8 @@ def main():
 
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                      description='convert a unix timestamp to various timezones')
-    parser.add_argument('unix_timestamp', nargs='?', type=int, default=None,
-                        help='UNIX timestamp to convert')
+    parser.add_argument('unix_timestamp', nargs='?', type=float, default=None,
+                        help='UNIX timestamp to convert; floating-point is accepted, fractional part is truncated')
     parser.add_argument('-f', '--time-format', required=False, type=str,
                         default='%F %a %T %Z(UTC%z)', help='strftime format to display timestamp')
     parser.add_argument('-z', '--time-zones', required=False, type=str, default=my_timezones,
@@ -55,9 +55,7 @@ def main():
         print("WARNING Unknown timezones: '{0}'".format("', '".join(unknown_tzs)),
               file=sys.stderr)
 
-    unix_ts = args.unix_timestamp
-    if not unix_ts:
-        unix_ts = int(time.time())
+    unix_ts = int(args.unix_timestamp or time.time())
 
     now = int(time.time())
     now_dt = datetime.utcfromtimestamp(now).replace(tzinfo=utc)
