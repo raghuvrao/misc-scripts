@@ -30,7 +30,8 @@ def main():
     my_timezones = ','.join(['Etc/UTC', 'US/Pacific', 'US/Eastern', 'Asia/Kolkata'])
 
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-                                     description='convert a unix timestamp to various timezones')
+                                     description=('convert a unix timestamp to various timezones;'
+                                                  ' without any arguments, print current time in various timezones'))
     parser.add_argument('unix_timestamp', nargs='?', type=float, default=None,
                         help='UNIX timestamp to convert; floating-point is accepted, fractional part is truncated')
     parser.add_argument('-f', '--time-format', required=False, type=str,
@@ -52,7 +53,8 @@ def main():
         except UnknownTimeZoneError:
             unknown_tzs.append(tz)
     if any(unknown_tzs):
-        print("WARNING Unknown timezones: '{0}'".format("', '".join(unknown_tzs)),
+        print("WARNING Unknown timezone{0}: '{1}'".format("s" if len(unknown_tzs) > 1 else "",
+                                                          "', '".join(unknown_tzs)),
               file=sys.stderr)
 
     unix_ts = int(args.unix_timestamp or time.time())
