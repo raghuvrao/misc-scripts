@@ -2,6 +2,8 @@
 
 # Sledgehammer to disable cursor blinking.
 
+# Author: Raghu Rao <raghu.v.rao@gmail.com>
+
 # GNOME 2
 gconftool-2 --set "/desktop/gnome/interface/cursor_blink" --type boolean "False"
 gconftool-2 --set "/apps/gnome-terminal/profiles/Default/cursor_blink" --type boolean "False"

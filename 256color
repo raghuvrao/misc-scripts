@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Author: Raghu Rao <raghu.v.rao@gmail.com>
+
 doit()
 {
     local column=0

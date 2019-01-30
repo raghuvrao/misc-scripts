@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Author: Raghu Rao <raghu.v.rao@gmail.com>
+
 set -e
 
 string1="g90ODB8S5Il1|rnm"
