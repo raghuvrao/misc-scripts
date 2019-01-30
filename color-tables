@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Author: Raghu Rao <raghu.v.rao@gmail.com>
+
 text=" hi!"
 d="$(tput sgr0 2>/dev/null)"
 bo="$(tput bold 2>/dev/null)"

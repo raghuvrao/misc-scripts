@@ -1,3 +1,5 @@
 #!/usr/bin/env dash
 
+# Author: Raghu Rao <raghu.v.rao@gmail.com>
+
 setxkbmap -option ctrl:nocaps

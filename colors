@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Author: Raghu Rao <raghu.v.rao@gmail.com>
+
 string1=" Hello! "
 string2=".,;:0ODB8S5Il1|rnm"
 d="$(tput sgr0)"
