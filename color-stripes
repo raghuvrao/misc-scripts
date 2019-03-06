@@ -5,8 +5,8 @@
 set -e
 
 string1="g90ODB8S5Il1|rnm"
-d="$(tput sgr0)"
-b="$(tput bold)"
+d="$(tput sgr0 2>/dev/null)"
+b="$(tput bold 2>/dev/null)"
 
 do_it()
 {
@@ -14,8 +14,8 @@ do_it()
       c=""
       b=""
     else
-      c="$(tput setaf ${1})"
-      b="$(tput setab ${1})"
+      c="$(tput setaf ${1} 2>/dev/null)"
+      b="$(tput setab ${1} 2>/dev/null)"
     fi
     printf "%s%60d%s" "${b}" "${1}" "${d}"
     printf " %s%s%s\n\n" "${c}" "${string1}" "${d}"
