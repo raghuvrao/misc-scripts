@@ -1,11 +1,16 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Author: Raghu Rao <raghu.v.rao@gmail.com>
 
 import sys
-import urllib
+from urllib.parse import (
+    quote,
+    quote_plus,
+)
+
+q = quote_plus if sys.argv[0][-1] == '+' else quote
 
 if len(sys.argv) > 1:
-    print urllib.quote(sys.argv[1])
+    print(q(sys.argv[1]))
 else:
-    print urllib.quote(sys.stdin.read())
+    print(q(sys.stdin.read()))
