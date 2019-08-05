@@ -27,15 +27,6 @@ def uniq_order_preserve(comma_separated_sequence):
 
 
 def main():
-    my_timezones = ','.join(
-        [
-            'Etc/UTC',
-            'US/Pacific',
-            'US/Eastern',
-            'Asia/Kolkata',
-        ],
-    )
-
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         description=(
@@ -63,7 +54,7 @@ def main():
         '--time-zones',
         required=False,
         type=str,
-        default=my_timezones,
+        default='Etc/UTC,US/Pacific,US/Eastern,Asia/Kolkata',
         help='timezones for which to display timestamps',
     )
     parser.add_argument(

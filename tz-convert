@@ -20,14 +20,6 @@ def emit_warning(message):
 
 
 def main():
-    default_timezones = ','.join(
-        [
-            'Etc/UTC',
-            'US/Pacific',
-            'US/Eastern',
-            'Asia/Kolkata',
-        ],
-    )
     default_timezone = 'Etc/UTC'
 
     parser = argparse.ArgumentParser(
@@ -42,7 +34,7 @@ def main():
     parser.add_argument(
         '-z',
         '--timezones',
-        default=default_timezones,
+        default='Etc/UTC,US/Pacific,US/Eastern,Asia/Kolkata',
         required=False,
         help='the timezones to which to convert the specified moment',
     )
