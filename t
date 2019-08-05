@@ -1,9 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Author: Raghu Rao <raghu.v.rao@gmail.com>
 
-
-from __future__ import print_function
 
 import argparse
 import sys
@@ -29,21 +27,61 @@ def uniq_order_preserve(comma_separated_sequence):
 
 
 def main():
-    my_timezones = ','.join(['Etc/UTC', 'US/Pacific', 'US/Eastern', 'Asia/Kolkata'])
+    my_timezones = ','.join(
+        [
+            'Etc/UTC',
+            'US/Pacific',
+            'US/Eastern',
+            'Asia/Kolkata',
+        ],
+    )
 
-    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-                                     description=('convert a unix timestamp to various timezones;'
-                                                  ' without any arguments, print current time in various timezones'))
-    parser.add_argument('unix_timestamp', nargs='?', type=float, default=None,
-                        help='UNIX timestamp to convert; floating-point is accepted, fractional part is truncated')
-    parser.add_argument('-f', '--time-format', required=False, type=str,
-                        default='%F %a %T %Z(UTC%z)', help='strftime format to display timestamp')
-    parser.add_argument('-z', '--time-zones', required=False, type=str, default=my_timezones,
-                        help='timezones for which to display timestamps')
-    parser.add_argument('-u', '--include-epoch-info', required=False, action='store_true',
-                        default=False, help='include UNIX-epoch information in the output')
-    parser.add_argument('-n', '--include-now-info', required=False, action='store_true',
-                        default=False, help='include difference between input and now in the output')
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        description=(
+            'convert a unix timestamp to various timezones;'
+            ' without any arguments, print current time in various timezones'
+        ),
+    )
+    parser.add_argument(
+        'unix_timestamp',
+        nargs='?',
+        type=float,
+        default=None,
+        help='UNIX timestamp to convert; floating-point is accepted, fractional part is truncated',
+    )
+    parser.add_argument(
+        '-f',
+        '--time-format',
+        required=False,
+        type=str,
+        default='%F %a %T %Z(UTC%z)',
+        help='strftime format to display timestamp',
+    )
+    parser.add_argument(
+        '-z',
+        '--time-zones',
+        required=False,
+        type=str,
+        default=my_timezones,
+        help='timezones for which to display timestamps',
+    )
+    parser.add_argument(
+        '-u',
+        '--include-epoch-info',
+        required=False,
+        action='store_true',
+        default=False,
+        help='include UNIX-epoch information in the output',
+    )
+    parser.add_argument(
+        '-n',
+        '--include-now-info',
+        required=False,
+        action='store_true',
+        default=False,
+        help='include difference between input and now in the output',
+    )
     args = parser.parse_args()
 
     # Work out the output timezones.
@@ -55,9 +93,7 @@ def main():
         except UnknownTimeZoneError:
             unknown_tzs.append(tz)
     if any(unknown_tzs):
-        print("WARNING Unknown timezone{0}: '{1}'".format("s" if len(unknown_tzs) > 1 else "",
-                                                          "', '".join(unknown_tzs)),
-              file=sys.stderr)
+        print(f"[WARNING] Unknown timezones: {unknown_tzs}", file=sys.stderr)
 
     unix_ts = int(args.unix_timestamp or time.time())
 
@@ -75,10 +111,8 @@ def main():
                 remaining_seconds = delta.seconds - (hours * 3600)
                 minutes = remaining_seconds // 60
                 seconds = remaining_seconds - (minutes * 60)
-                days_hours_minutes_seconds = ' ({0}d {1}h {2}m {3}s)'.format(delta.days, hours,
-                                                                             minutes, seconds)
-            m += ' [now: {0}] [diff: {1} seconds{2}]'.format(now, delta_seconds,
-                                                             days_hours_minutes_seconds)
+                days_hours_minutes_seconds = f" ({delta.days}d {hours}h {minutes}m {seconds}s)"
+            m += f" [now: {now}] [diff: {delta_seconds} seconds{days_hours_minutes_seconds}]"
         m += ' UNIX'
         print(m, file=sys.stdout)
 
@@ -87,7 +121,7 @@ def main():
     for tz in tzs:
         m = my_dt.astimezone(tz).strftime(tf)
         if args.include_now_info:
-            m += ' [now: {0}]'.format(now_dt.astimezone(tz).strftime(tf))
+            m += f" [now: {now_dt.astimezone(tz).strftime(tf)}]"
         m += ' ' + str(tz)
         print(m, file=sys.stdout)
 
