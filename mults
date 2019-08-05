@@ -1,9 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Author: Raghu Rao <raghu.v.rao@gmail.com>
 
-
-from __future__ import print_function
 
 import argparse
 import sys
@@ -43,50 +41,74 @@ def multiples_by_count(number, lower_limit, count, remainder):
     while m < lower_limit:
         m += number
 
-    for i in xrange(count):
+    for i in range(count):
         yield m
         m += number
 
 
 def main():
     parser = argparse.ArgumentParser(description='generate multiples of a number')
-    parser.add_argument('number', help='number whose multiples to generate', type=int)
-    parser.add_argument('-l', '--lower-limit', help='lower limit of output numbers', type=int)
-    parser.add_argument('-r', '--remainder', help='generate "multiples" that yield this remainder', type=int)
+    parser.add_argument(
+        'number',
+        help='number whose multiples to generate',
+        type=int,
+    )
+    parser.add_argument(
+        '-l',
+        '--lower-limit',
+        help='lower limit of output numbers',
+        type=int,
+    )
+    parser.add_argument(
+        '-r',
+        '--remainder',
+        help='generate "multiples" that yield this remainder',
+        type=int,
+    )
     num_multiples_group = parser.add_mutually_exclusive_group()
-    num_multiples_group.add_argument('-c', '--count', help='number of multiples', type=int)
-    num_multiples_group.add_argument('-u', '--upper-limit', help='upper limit of output numbers', type=int)
+    num_multiples_group.add_argument(
+        '-c',
+        '--count',
+        help='number of multiples',
+        type=int,
+    )
+    num_multiples_group.add_argument(
+        '-u',
+        '--upper-limit',
+        help='upper limit of output numbers',
+        type=int,
+    )
     args = parser.parse_args()
 
     number = args.number
     if number <= 0:
-        print("number: want non-zero natural number, got {0}".format(number), file=sys.stderr)
+        print(f"number: want non-zero natural number, got {number}", file=sys.stderr)
         return 1
 
     remainder = 0
     if args.remainder is not None:  # Treat None and 0 differently.
         remainder = args.remainder
         if remainder < 0:
-            print("remainder: want natural number, got {0}".format(remainder), file=sys.stderr)
+            print(f"remainder: want natural number, got {remainder}", file=sys.stderr)
             return 1
 
     lower_limit = 1
     if args.lower_limit is not None:
         lower_limit = args.lower_limit
         if lower_limit <= 0:
-            print("lower limit: want non-zero natural number, got {0}".format(lower_limit), file=sys.stderr)
+            print(f"lower limit: want non-zero natural number, got {lower_limit}", file=sys.stderr)
             return 1
 
     count = args.count
     upper_limit = args.upper_limit
     if count is not None:  # Treat None and 0 differently.
         if count <= 0:
-            print("count: want non-zero natural number, got {0}".format(count), file=sys.stderr)
+            print(f"count: want non-zero natural number, got {count}", file=sys.stderr)
             return 1
         print(" ".join(str(m) for m in multiples_by_count(number, lower_limit, count, remainder)))
     elif upper_limit is not None:  # Treat None and 0 differently.
         if upper_limit <= 0:
-            print("upper limit: want non-zero natural number, got {0}".format(upper_limit), file=sys.stderr)
+            print("upper limit: want non-zero natural number, got {upper_limit}", file=sys.stderr)
             return 1
         print(" ".join(str(m) for m in multiples_by_upper_limit(number, lower_limit, upper_limit, remainder)))
     else:
