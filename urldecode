@@ -1,11 +1,16 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Author: Raghu Rao <raghu.v.rao@gmail.com>
 
 import sys
-import urllib
+from urllib.parse import (
+    unquote,
+    unquote_plus,
+)
+
+uq = unquote_plus if sys.argv[0][-1] == '+' else unquote
 
 if len(sys.argv) > 1:
-    print urllib.unquote(sys.argv[1])
+    print(uq(sys.argv[1]))
 else:
-    print urllib.unquote(sys.stdin.read())
+    print(uq(sys.stdin.read()))
