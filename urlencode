@@ -10,7 +10,4 @@ from urllib.parse import (
 
 q = quote_plus if sys.argv[0][-1] == '+' else quote
 
-if len(sys.argv) > 1:
-    print(q(sys.argv[1]))
-else:
-    print(q(sys.stdin.read()))
+print(q(sys.argv[1]) if len(sys.argv) > 1 else q(sys.stdin.read()))
