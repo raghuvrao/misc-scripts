@@ -10,10 +10,10 @@ import sys
 def multiples_by_upper_limit(number, lower_limit, upper_limit, remainder):
     # This check is valid because we are dealing with only natural numbers.
     if number <= remainder:
-        raise StopIteration
+        return
 
     if upper_limit < number:
-        raise StopIteration
+        return
 
     if lower_limit < number:
         lower_limit = number
@@ -31,7 +31,7 @@ def multiples_by_upper_limit(number, lower_limit, upper_limit, remainder):
 def multiples_by_count(number, lower_limit, count, remainder):
     # This check is valid because we are dealing with only natural numbers.
     if number <= remainder:
-        raise StopIteration
+        return
 
     if lower_limit < number:
         lower_limit = number
