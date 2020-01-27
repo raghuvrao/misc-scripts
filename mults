@@ -105,15 +105,15 @@ def main():
         if count <= 0:
             print(f"count: want non-zero natural number, got {count}", file=sys.stderr)
             return 1
-        print(" ".join(str(m) for m in multiples_by_count(number, lower_limit, count, remainder)))
+        print('\n'.join(map(str, multiples_by_count(number, lower_limit, count, remainder))))
     elif upper_limit is not None:  # Treat None and 0 differently.
         if upper_limit <= 0:
             print("upper limit: want non-zero natural number, got {upper_limit}", file=sys.stderr)
             return 1
-        print(" ".join(str(m) for m in multiples_by_upper_limit(number, lower_limit, upper_limit, remainder)))
+        print('\n'.join(map(str, multiples_by_upper_limit(number, lower_limit, upper_limit, remainder))))
     else:
         # Both count and upper_limit are None.  Default to 10 multiples.
-        print(" ".join(str(m) for m in multiples_by_count(number, lower_limit, 10, remainder)))
+        print('\n'.join(map(str, multiples_by_count(number, lower_limit, 10, remainder))))
 
     return 0
 
