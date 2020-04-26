@@ -1,0 +1,119 @@
+#!/usr/bin/env python3
+
+
+import argparse
+import sys
+import random
+
+
+class RandomWordsError(Exception):
+    pass
+
+
+class NoSuitableWordError(RandomWordsError):
+    pass
+
+
+class TooFewWordsError(RandomWordsError):
+    pass
+
+
+def fetch_words(words, want_num_words, num_searches_per_word, min_word_length):
+    out = set()
+
+    total_num_words = len(words)
+
+    if total_num_words < want_num_words:
+        raise TooFewWordsError(
+            f"Need at least {want_num_words} words; have {total_num_words}",
+        )
+
+    for _ in range(want_num_words):
+        word = ''
+        is_suitable_word = False
+
+        for _ in range(num_searches_per_word):
+            word = random.choice(words)
+            if (len(word) < min_word_length) or (word in out):
+                continue
+            is_suitable_word = True
+            break
+
+        if not is_suitable_word:
+            raise NoSuitableWordError(
+                f"No suitable word in {num_searches_per_word} search attempts",
+            )
+
+        out.add(word)
+
+    return out
+
+
+def main():
+    args_parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        description='output randomly chosen words from a file',
+    )
+
+    args_parser.add_argument(
+        '-w', '--words-file',
+        type=str, default='/usr/share/dict/words',
+        help='path to words file',
+    )
+    args_parser.add_argument(
+        '-n', '--words-per-set',
+        type=int, default=4,
+        help='number of words per set',
+    )
+    args_parser.add_argument(
+        '-s', '--word-sets',
+        type=int, default=1,
+        help='number of words sets',
+    )
+    args_parser.add_argument(
+        '-a', '--searches-per-word',
+        type=int, default=5,
+        help='number of search attempts per word',
+    )
+    args_parser.add_argument(
+        '-m', '--min-word-length',
+        type=int, default=4,
+        help='minimum word length',
+    )
+    args_parser.add_argument(
+        '-p', '--word-sep',
+        type=str, default=None,
+        help='character to use as word separator; None means any space',
+    )
+
+    args = args_parser.parse_args()
+
+    if (
+        (args.words_per_set <= 0)
+        or (args.word_sets <= 0)
+        or (args.searches_per_word <= 0)
+    ):
+        return
+
+    words = []
+
+    with open(args.words_file, 'r') as wf:
+        words = wf.read().split(sep=args.word_sep)
+
+    if not any(words):
+        raise TooFewWordsError(f"File '{args.words_file}' has no words")
+
+    for _ in range(args.word_sets):
+        print(fetch_words(
+            words,
+            args.words_per_set,
+            args.searches_per_word,
+            args.min_word_length,
+        ))
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except Exception as err:
+        sys.exit(err)
