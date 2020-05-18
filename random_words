@@ -18,24 +18,6 @@ class TooFewWordsError(RandomWordsError):
     pass
 
 
-def fetch_words(words, want_num_words, num_searches_per_word, min_word_length):
-    out = set()
-    for _ in range(want_num_words):
-        word = None
-        for _ in range(num_searches_per_word):
-            word = random.choice(words)
-            if (len(word) < min_word_length) or (word in out):
-                word = None
-                continue
-            break
-        if not word:
-            raise NoSuitableWordError(
-                f"No suitable word in {num_searches_per_word} search attempts",
-            )
-        out.add(word)
-    return out
-
-
 def main():
     args_parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
@@ -101,12 +83,21 @@ def main():
         )
 
     for _ in range(args.word_sets):
-        print(fetch_words(
-            words,
-            args.words_per_set,
-            args.searches_per_word,
-            args.min_word_length,
-        ))
+        out = set()
+        for _ in range(args.words_per_set):
+            word = None
+            for _ in range(args.searches_per_word):
+                word = random.choice(words)
+                if (len(word) < args.min_word_length) or (word in out):
+                    word = None
+                    continue
+                break
+            if not word:
+                raise NoSuitableWordError(
+                    f"No suitable word in {args.searches_per_word} search attempts",
+                )
+            out.add(word)
+        print(out)
 
 
 if __name__ == '__main__':
