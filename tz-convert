@@ -3,7 +3,8 @@
 
 # Author: Raghu Rao <raghu.v.rao@gmail.com>
 
-# TODO: this script is similar in functionality to t.  See if t and this script can be unified.
+# TODO: this script is similar in functionality to t.  See if t and this
+# script can be unified.
 
 
 import argparse
@@ -32,29 +33,25 @@ def main():
         help='the time to convert; see the input format option for the default format',
     )
     parser.add_argument(
-        '-z',
-        '--timezones',
+        '-z', '--timezones',
         default='Etc/UTC,US/Pacific,US/Eastern,Asia/Kolkata',
         required=False,
         help='the timezones to which to convert the specified moment',
     )
     parser.add_argument(
-        '-t',
-        '--in-timezone',
+        '-t', '--in-timezone',
         default=default_timezone,
         required=False,
         help='the timezone in which the moment is',
     )
     parser.add_argument(
-        '-i',
-        '--input-format',
+        '-i', '--input-format',
         default='%Y-%m-%d-%H-%M-%S',
         required=False,
         help='input format (strftime)',
     )
     parser.add_argument(
-        '-o',
-        '--output-format',
+        '-o', '--output-format',
         default='%Y-%m-%d %H:%M:%S %Z(UTC%z)',
         required=False,
         help='output format (strftime)',
