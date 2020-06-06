@@ -8,7 +8,8 @@ import sys
 
 
 def multiples_by_upper_limit(number, lower_limit, upper_limit, remainder):
-    # This check is valid because we are dealing with only natural numbers.
+    # This check is valid because we are dealing with only natural
+    # numbers.
     if number <= remainder:
         return
 
@@ -29,7 +30,8 @@ def multiples_by_upper_limit(number, lower_limit, upper_limit, remainder):
 
 
 def multiples_by_count(number, lower_limit, count, remainder):
-    # This check is valid because we are dealing with only natural numbers.
+    # This check is valid because we are dealing with only natural
+    # numbers.
     if number <= remainder:
         return
 

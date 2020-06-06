@@ -42,32 +42,28 @@ def main():
         help='UNIX timestamp to convert; floating-point is accepted, fractional part is truncated',
     )
     parser.add_argument(
-        '-f',
-        '--time-format',
+        '-f', '--time-format',
         required=False,
         type=str,
         default='%F %a %T %Z(UTC%z)',
         help='strftime format to display timestamp',
     )
     parser.add_argument(
-        '-z',
-        '--time-zones',
+        '-z', '--time-zones',
         required=False,
         type=str,
         default='Etc/UTC,US/Pacific,US/Eastern,Asia/Kolkata',
         help='timezones for which to display timestamps',
     )
     parser.add_argument(
-        '-u',
-        '--include-epoch-info',
+        '-u', '--include-epoch-info',
         required=False,
         action='store_true',
         default=False,
         help='include UNIX-epoch information in the output',
     )
     parser.add_argument(
-        '-n',
-        '--include-now-info',
+        '-n', '--include-now-info',
         required=False,
         action='store_true',
         default=False,
