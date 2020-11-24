@@ -2,23 +2,17 @@
 
 # Author: Raghu Rao <raghu.v.rao@gmail.com>
 
-string1=" Hello! "
-string2=".,;:0ODB8S5Il1|rnm"
+s="The quick brown fox"
 d="$(tput sgr0 2>/dev/null)"
-b="$(tput bold 2>/dev/null)"
+bo="$(tput bold 2>/dev/null)"
 
-do_it()
-{
-    if [[ "${1}" =~ [0-9]+ ]]; then c="$(tput setab ${1} 2>/dev/null)"; else c=""; fi
-    echo -n -e "${c}${string1}${d} ${b}${c}${string1}${d} "
-    if [[ "${1}" =~ [0-9]+ ]]; then c="$(tput setaf ${1} 2>/dev/null)"; else c=""; fi
-    echo -e "${c}${string2}${d} ${b}${c}${string2}${d} ${1}"
-}
-
-echo -e "${d}"
-do_it
-#echo -e "  ${string1}${d}${b}${c}${string1}${d} ${c}${string2}${d} ${b}${c}${string2}${d}"
+printf '%s' "${d}"
 for i in {0..15}; do
-    do_it ${i}
+    fg="$(tput setaf "${i}" 2>/dev/null)"
+    bg="$(tput setab "${i}" 2>/dev/null)"
+    printf '%s%s%s %s%s%s%s %s%s%s %s%s%s%s\n' \
+        "${bg}" "${s}" "${d}" \
+        "${bg}" "${bo}" "${s}" "${d}" \
+        "${fg}" "${s}" "${d}" \
+        "${fg}" "${bo}" "${s}" "${d}"
 done
-echo -e "${d}"
