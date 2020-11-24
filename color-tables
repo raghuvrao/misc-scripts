@@ -2,30 +2,29 @@
 
 # Author: Raghu Rao <raghu.v.rao@gmail.com>
 
-text=" hi!"
+nc=${1}
+if [[ -z "${nc}" ]]; then nc=16; fi
+if [[ ${nc} -lt 8 || ${nc} -gt 16 ]]; then
+    printf 'Valid argument is 8 or 16\n' >&2
+    exit 1
+fi
+
+text="WXYZ"
 d="$(tput sgr0 2>/dev/null)"
 bo="$(tput bold 2>/dev/null)"
+for (( i = 0; i < ${nc}; i++ )); do
+    fgs[${i}]="$(tput setaf ${i} 2>/dev/null)"
+    bgs[${i}]="$(tput setab ${i} 2>/dev/null)"
+done
 
-do_it()
-{
-    for f in {0..15}; do
-        fg="$(tput setaf ${f} 2>/dev/null)"
-        for b in {0..7}; do
-            bg="$(tput setab ${b} 2>/dev/null)"
-            echo -n -e "${d}${bg}${fg}${text}${d}${bo}${bg}${fg}${text} ${d}"
-        done
-        echo
+printf '%s' "${d}"
+for x in "${bgs[@]}"; do
+    for y in "${fgs[@]}"; do
+        printf '%s%s %s%s' "${x}" "${y}" "${text}" "${d}"
     done
-    for f in {0..15}; do
-        fg="$(tput setaf ${f} 2>/dev/null)"
-        for b in {8..15}; do
-            bg="$(tput setab ${b} 2>/dev/null)"
-            echo -n -e "${d}${bg}${fg}${text}${d}${bo}${bg}${fg}${text} ${d}"
-        done
-        echo
+    printf '\n'
+    for y in "${fgs[@]}"; do
+        printf '%s%s%s %s%s' "${bo}" "${x}" "${y}" "${text}" "${d}"
     done
-}
-
-echo -e "${d}"
-do_it
-echo -e "${d}"
+    printf '\n'
+done
