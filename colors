@@ -2,17 +2,24 @@
 
 # Author: Raghu Rao <raghu.v.rao@gmail.com>
 
-s="The quick brown fox"
+t1="Abc def ghijk lm"
+t2="Nop qrs tuvwx yz"
 d="$(tput sgr0 2>/dev/null)"
-bo="$(tput bold 2>/dev/null)"
+b="$(tput bold 2>/dev/null)"
+for (( i = 0 ; i < 16; i++ )); do
+    fgs[${i}]="$(tput setaf ${i} 2>/dev/null)"
+    bgs[${i}]="$(tput setab ${i} 2>/dev/null)"
+done
 
 printf '%s' "${d}"
-for i in {0..15}; do
-    fg="$(tput setaf "${i}" 2>/dev/null)"
-    bg="$(tput setab "${i}" 2>/dev/null)"
-    printf '%s%s%s %s%s%s%s %s%s%s %s%s%s%s\n' \
-        "${bg}" "${s}" "${d}" \
-        "${bg}" "${bo}" "${s}" "${d}" \
-        "${fg}" "${s}" "${d}" \
-        "${fg}" "${bo}" "${s}" "${d}"
+count="${#fgs[@]}"
+for ((i = 0; i < ${count}; i++)); do
+    printf '%2d' ${i}
+    x="${bgs[${i}]}"
+    printf '  %s%s%s' "${x}" "${t1}" "${d}"
+    printf '  %s%s%s%s' "${b}" "${x}" "${t2}" "${d}"
+    x="${fgs[${i}]}"
+    printf '  %s%s%s' "${x}" "${t1}" "${d}"
+    printf '  %s%s%s%s' "${b}" "${x}" "${t2}" "${d}"
+    printf '\n'
 done

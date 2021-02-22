@@ -3,28 +3,34 @@
 # Author: Raghu Rao <raghu.v.rao@gmail.com>
 
 nc=${1}
-if [[ -z "${nc}" ]]; then nc=16; fi
-if [[ ${nc} -lt 8 || ${nc} -gt 16 ]]; then
-    printf 'Valid argument is 8 or 16\n' >&2
+if [[ -z "${nc}" ]]; then
+    nc=16
+fi
+if [[ ( ${nc} -ne 8 ) && ( ${nc} -ne 16 ) ]]; then
+    printf '%s\n' "Argument must be nil, 8, or 16" >&2
     exit 1
 fi
 
-text="WXYZ"
-d="$(tput sgr0 2>/dev/null)"
-bo="$(tput bold 2>/dev/null)"
-for (( i = 0; i < ${nc}; i++ )); do
+declare -a fgs bgs
+# Unlike in many other shells, arrays in bash are zero-based.
+for (( i = 0 ; i < ${nc} ; i++ )); do
     fgs[${i}]="$(tput setaf ${i} 2>/dev/null)"
     bgs[${i}]="$(tput setab ${i} 2>/dev/null)"
 done
 
+d="$(tput sgr0 2>/dev/null)"
+
 printf '%s' "${d}"
-for x in "${bgs[@]}"; do
-    for y in "${fgs[@]}"; do
-        printf '%s%s %s%s' "${x}" "${y}" "${text}" "${d}"
-    done
-    printf '\n'
-    for y in "${fgs[@]}"; do
-        printf '%s%s%s %s%s' "${bo}" "${x}" "${y}" "${text}" "${d}"
+
+for bo in '' "$(tput bold 2>/dev/null)"; do
+    i=0
+    for p in "${fgs[@]}"; do
+        printf '%2d ' ${i}
+        for q in "${bgs[@]}"; do
+            printf '%s%s%s xy %s' "${bo}" "${p}" "${q}" "${d}"
+        done
+        i=$((i + 1))
+        printf '\n'
     done
     printf '\n'
 done

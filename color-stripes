@@ -4,30 +4,31 @@
 
 set -e
 
-string1="g90ODB8S5Il1|rnm"
-d="$(tput sgr0 2>/dev/null)"
-b="$(tput bold 2>/dev/null)"
-
-do_it()
-{
-    if [[ -z "${1}" ]]; then
-      c=""
-      b=""
-    else
-      c="$(tput setaf ${1} 2>/dev/null)"
-      b="$(tput setab ${1} 2>/dev/null)"
-    fi
-    printf "%s%60d%s" "${b}" "${1}" "${d}"
-    printf " %s%s%s\n\n" "${c}" "${string1}" "${d}"
-}
-
-echo -e "${d}"
-if [[ "${1}" =~ [0-9]+ ]]; then
-  do_it ${1}
-else
-  do_it
-  for i in {0..255}; do
-      do_it ${i}
-  done
+ac="$(tput colors 2>/dev/null)"
+if [[ -z "${ac}" || ${ac} -le 0 ]]; then
+    printf 'Cannot determine number of available colors.\n'
+    exit 1
 fi
-echo -e "${d}"
+
+start_color=0
+end_color=${ac}
+
+dc="${1}"
+if [[ -n "${dc}" ]]; then
+    if [[ ! "${dc}" =~ ^\+?[0-9]+$ || ${dc} -ge ${ac} || ${dc} -lt 0 ]]; then
+        printf 'Argument, if provided, must be an integer N where 0<=N<%d\n' ${ac}
+        exit 1
+    fi
+    start_color=${dc}
+    end_color=$((dc+1))
+fi
+
+text="LOREM IPSUM"
+d="$(tput sgr0 2>/dev/null)"
+
+for (( i = ${start_color}; i < ${end_color}; i++ )); do
+    fg="$(tput setaf ${i} 2>/dev/null)"
+    bg="$(tput setab ${i} 2>/dev/null)"
+    printf '\n%s%40d%s %s%s%s\n' "${bg}" "${i}" "${d}" "${fg}" "${text}" "${d}"
+done
+printf '\n'
