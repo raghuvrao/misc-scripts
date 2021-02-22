@@ -2,22 +2,31 @@
 
 # Author: Raghu Rao <raghu.v.rao@gmail.com>
 
-bg="${1}"
-if [[ -z "${bg}" || ${bg} -lt 0 || ${bg} -gt 15 ]]; then
+num_colors="$(tput colors 2>/dev/null)"
+if [[ -z "${num_colors}" || ${num_colors} -lt 2 ]]; then
+    printf '%s\n' 'Cannot determine number of available colors'
     exit 1
 fi
 
-bg="$(tput setab "${bg}" 2>/dev/null)"
-s1="THE QUICK BROWN FOX"
-s2="JUMPS OVER THE LAZY DOG."
+if [[ -z "${1}" || ! "${1}" =~ ^\+?[0-9]+$ || ${1} -ge ${num_colors} || ${1} -lt 0 ]]; then
+    printf 'Argument must be an integer N where 0<=N<%d\n' ${num_colors}
+    exit 1
+fi
+
+text='GLIB JOCKS QUIZ NYMPH TO VEX DWARF.'
+
 d="$(tput sgr0 2>/dev/null)"
-bo="$(tput bold 2>/dev/null)"
-for i in {0..15}; do
+
+f=${num_colors}
+if [[ ${f} -gt 16 ]]; then f=16; fi
+declare -a fgs
+# Unlike in many other shells, arrays in bash are zero-based.
+for (( i = 0 ; i < ${f} ; i++ )); do
     fgs[${i}]="$(tput setaf ${i} 2>/dev/null)"
 done
+bg="$(tput setab "${1}" 2>/dev/null)"
+bo="$(tput bold 2>/dev/null)"
 
-printf '%s' "${d}"
-for y in "${fgs[@]}"; do
-    printf '%s' "${bg}"
-    printf '%s%s %s%s%s\n' "${y}" "${s1}" "${bo}" "${s2}" "${d}"
+for x in "${fgs[@]}"; do
+    printf '%s%s%s  %s%s%s\n' "${bg}" "${x}" "${text}" "${bo}" "${text}" "${d}"
 done
