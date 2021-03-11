@@ -56,27 +56,23 @@ def main():
         type=int,
     )
     parser.add_argument(
-        '-l',
-        '--lower-limit',
+        '-l', '--lower-limit',
         help='lower limit of output numbers',
         type=int,
     )
     parser.add_argument(
-        '-r',
-        '--remainder',
+        '-r', '--remainder',
         help='generate "multiples" that yield this remainder',
         type=int,
     )
     num_multiples_group = parser.add_mutually_exclusive_group()
     num_multiples_group.add_argument(
-        '-c',
-        '--count',
+        '-c', '--count',
         help='number of multiples',
         type=int,
     )
     num_multiples_group.add_argument(
-        '-u',
-        '--upper-limit',
+        '-u', '--upper-limit',
         help='upper limit of output numbers',
         type=int,
     )
@@ -102,24 +98,32 @@ def main():
             return 1
 
     count = args.count
-    upper_limit = args.upper_limit
     if count is not None:  # Treat None and 0 differently.
         if count <= 0:
             print(f"count: want non-zero natural number, got {count}", file=sys.stderr)
             return 1
         for x in multiples_by_count(number, lower_limit, count, remainder):
             print(x)
-    elif upper_limit is not None:  # Treat None and 0 differently.
+        return 0
+
+    upper_limit = args.upper_limit
+    if upper_limit is not None:  # Treat None and 0 differently.
         if upper_limit <= 0:
-            print("upper limit: want non-zero natural number, got {upper_limit}", file=sys.stderr)
+            print(f"upper limit: want non-zero natural number, got {upper_limit}", file=sys.stderr)
+            return 1
+        elif upper_limit <= lower_limit:
+            print(
+                f"limits: want upper > lower, got {upper_limit}, {lower_limit}, respectively",
+                file=sys.stderr,
+            )
             return 1
         for x in multiples_by_upper_limit(number, lower_limit, upper_limit, remainder):
             print(x)
-    else:
-        # Both count and upper_limit are None.  Default to 10 multiples.
-        for x in multiples_by_count(number, lower_limit, 10, remainder):
-            print(x)
+        return 0
 
+    # Both count and upper_limit are None.  Default to 10 multiples.
+    for x in multiples_by_count(number, lower_limit, 10, remainder):
+        print(x)
     return 0
 
 
@@ -127,4 +131,4 @@ if __name__ == '__main__':
     try:
         sys.exit(main())
     except KeyboardInterrupt:
-        print(f"Canceled", file=sys.stderr)
+        print(f"Interrupted", file=sys.stderr)
