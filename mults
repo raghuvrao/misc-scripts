@@ -49,31 +49,35 @@ def multiples_by_count(number, lower_limit, count, remainder):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='generate multiples of a number')
+    parser = argparse.ArgumentParser(description="generate multiples of a number")
     parser.add_argument(
-        'number',
-        help='number whose multiples to generate',
+        "number",
+        help="number whose multiples to generate",
         type=int,
     )
     parser.add_argument(
-        '-l', '--lower-limit',
-        help='lower limit of output numbers',
+        "-l",
+        "--lower-limit",
+        help="lower limit of output numbers",
         type=int,
     )
     parser.add_argument(
-        '-r', '--remainder',
+        "-r",
+        "--remainder",
         help='generate "multiples" that yield this remainder',
         type=int,
     )
     num_multiples_group = parser.add_mutually_exclusive_group()
     num_multiples_group.add_argument(
-        '-c', '--count',
-        help='number of multiples',
+        "-c",
+        "--count",
+        help="number of multiples",
         type=int,
     )
     num_multiples_group.add_argument(
-        '-u', '--upper-limit',
-        help='upper limit of output numbers',
+        "-u",
+        "--upper-limit",
+        help="upper limit of output numbers",
         type=int,
     )
     args = parser.parse_args()
@@ -94,7 +98,10 @@ def main():
     if args.lower_limit is not None:
         lower_limit = args.lower_limit
         if lower_limit <= 0:
-            print(f"lower limit: want non-zero natural number, got {lower_limit}", file=sys.stderr)
+            print(
+                f"lower limit: want non-zero natural number, got {lower_limit}",
+                file=sys.stderr,
+            )
             return 1
 
     count = args.count
@@ -109,7 +116,10 @@ def main():
     upper_limit = args.upper_limit
     if upper_limit is not None:  # Treat None and 0 differently.
         if upper_limit <= 0:
-            print(f"upper limit: want non-zero natural number, got {upper_limit}", file=sys.stderr)
+            print(
+                f"upper limit: want non-zero natural number, got {upper_limit}",
+                file=sys.stderr,
+            )
             return 1
         elif upper_limit <= lower_limit:
             print(
@@ -127,7 +137,7 @@ def main():
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         sys.exit(main())
     except KeyboardInterrupt:

@@ -18,7 +18,7 @@ def uniq_order_preserve(comma_separated_sequence):
     """
     seen = set()
     seen_add = seen.add
-    for x in comma_separated_sequence.split(','):
+    for x in comma_separated_sequence.split(","):
         x = x.strip()
         if x in seen:
             continue
@@ -30,44 +30,48 @@ def main():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         description=(
-            'convert a unix timestamp to various timezones;'
-            ' without any arguments, print current time in various timezones'
+            "convert a unix timestamp to various timezones;"
+            " without any arguments, print current time in various timezones"
         ),
     )
     parser.add_argument(
-        'unix_timestamp',
-        nargs='?',
+        "unix_timestamp",
+        nargs="?",
         type=float,
         default=None,
-        help='UNIX timestamp to convert; floating-point is accepted, fractional part is truncated',
+        help="UNIX timestamp to convert; floating-point is accepted, fractional part is truncated",
     )
     parser.add_argument(
-        '-f', '--time-format',
+        "-f",
+        "--time-format",
         required=False,
         type=str,
-        default='%F %a %T %Z(UTC%z)',
-        help='strftime format to display timestamp',
+        default="%F %a %T %Z(UTC%z)",
+        help="strftime format to display timestamp",
     )
     parser.add_argument(
-        '-z', '--time-zones',
+        "-z",
+        "--time-zones",
         required=False,
         type=str,
-        default='Etc/UTC,US/Pacific,US/Eastern,Asia/Kolkata',
-        help='timezones for which to display timestamps',
+        default="Etc/UTC,US/Pacific,US/Eastern,Asia/Kolkata",
+        help="timezones for which to display timestamps",
     )
     parser.add_argument(
-        '-u', '--include-epoch-info',
+        "-u",
+        "--include-epoch-info",
         required=False,
-        action='store_true',
+        action="store_true",
         default=False,
-        help='include UNIX-epoch information in the output',
+        help="include UNIX-epoch information in the output",
     )
     parser.add_argument(
-        '-n', '--include-now-info',
+        "-n",
+        "--include-now-info",
         required=False,
-        action='store_true',
+        action="store_true",
         default=False,
-        help='include difference between input and now in the output',
+        help="include difference between input and now in the output",
     )
     args = parser.parse_args()
 
@@ -91,16 +95,18 @@ def main():
         m = str(unix_ts)
         if args.include_now_info:
             delta_seconds = abs(now - unix_ts)
-            days_hours_minutes_seconds = ''
+            days_hours_minutes_seconds = ""
             if delta_seconds >= 60:
                 delta = timedelta(seconds=delta_seconds)
                 hours = delta.seconds // 3600
                 remaining_seconds = delta.seconds - (hours * 3600)
                 minutes = remaining_seconds // 60
                 seconds = remaining_seconds - (minutes * 60)
-                days_hours_minutes_seconds = f" ({delta.days}d {hours}h {minutes}m {seconds}s)"
+                days_hours_minutes_seconds = (
+                    f" ({delta.days}d {hours}h {minutes}m {seconds}s)"
+                )
             m += f" [now: {now}] [diff: {delta_seconds} seconds{days_hours_minutes_seconds}]"
-        m += ' UNIX'
+        m += " UNIX"
         print(m, file=sys.stdout)
 
     tf = args.time_format
@@ -109,9 +115,9 @@ def main():
         m = my_dt.astimezone(tz).strftime(tf)
         if args.include_now_info:
             m += f" [now: {now_dt.astimezone(tz).strftime(tf)}]"
-        m += ' ' + str(tz)
+        m += " " + str(tz)
         print(m, file=sys.stdout)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
