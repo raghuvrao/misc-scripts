@@ -8,6 +8,6 @@ from urllib.parse import (
     quote_plus,
 )
 
-q = quote_plus if sys.argv[0][-1] == '+' else quote
+q = quote_plus if sys.argv[0][-1] == "+" else quote
 
 print(q(sys.argv[1]) if len(sys.argv) > 1 else q(sys.stdin.read()))

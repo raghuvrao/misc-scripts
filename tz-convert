@@ -21,40 +21,44 @@ def emit_warning(message):
 
 
 def main():
-    default_timezone = 'Etc/UTC'
+    default_timezone = "Etc/UTC"
 
     parser = argparse.ArgumentParser(
-        description='converts a given time and a timezone into other timezones.',
+        description="converts a given time and a timezone into other timezones.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
-        'moment',
+        "moment",
         type=str,
-        help='the time to convert; see the input format option for the default format',
+        help="the time to convert; see the input format option for the default format",
     )
     parser.add_argument(
-        '-z', '--timezones',
-        default='Etc/UTC,US/Pacific,US/Eastern,Asia/Kolkata',
+        "-z",
+        "--timezones",
+        default="Etc/UTC,US/Pacific,US/Eastern,Asia/Kolkata",
         required=False,
-        help='the timezones to which to convert the specified moment',
+        help="the timezones to which to convert the specified moment",
     )
     parser.add_argument(
-        '-t', '--in-timezone',
+        "-t",
+        "--in-timezone",
         default=default_timezone,
         required=False,
-        help='the timezone in which the moment is',
+        help="the timezone in which the moment is",
     )
     parser.add_argument(
-        '-i', '--input-format',
-        default='%Y-%m-%d-%H-%M-%S',
+        "-i",
+        "--input-format",
+        default="%Y-%m-%d-%H-%M-%S",
         required=False,
-        help='input format (strftime)',
+        help="input format (strftime)",
     )
     parser.add_argument(
-        '-o', '--output-format',
-        default='%Y-%m-%d %H:%M:%S %Z(UTC%z)',
+        "-o",
+        "--output-format",
+        default="%Y-%m-%d %H:%M:%S %Z(UTC%z)",
         required=False,
-        help='output format (strftime)',
+        help="output format (strftime)",
     )
     args = parser.parse_args()
 
@@ -64,7 +68,9 @@ def main():
     try:
         input_timezone = timezone(args.in_timezone)
     except UnknownTimeZoneError:
-        emit_warning(f"Unknown timezone '{args.in_timezone}'; assuming {default_timezone}")
+        emit_warning(
+            f"Unknown timezone '{args.in_timezone}'; assuming {default_timezone}"
+        )
         input_timezone = timezone(default_timezone)
 
     try:
@@ -82,7 +88,7 @@ def main():
     # Work out which timezones we will be using.
     tzs = []
     unknown_tzs = []
-    for tz in args.timezones.split(','):
+    for tz in args.timezones.split(","):
         try:
             tzs.append(timezone(tz.strip()))
         except UnknownTimeZoneError:
@@ -90,11 +96,11 @@ def main():
     if any(unknown_tzs):
         emit_warning(f"Unknown timezones: {unknown_tzs}")
     if not any(tzs):
-        tzs = [timezone('Etc/UTC')]
+        tzs = [timezone("Etc/UTC")]
 
     for tz in tzs:
         print(f"{moment.astimezone(tz).strftime(out_format)} {tz}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
