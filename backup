@@ -1,16 +1,19 @@
 #!/bin/bash
 
-shopt -u dotglob
-
-list_1=( "${HOME}"/* )
-list_2=( "${HOME}/.android" "${HOME}/.dosbox" "${HOME}/.mozilla" )
 backup_disk_mountpoint='/mnt/backup'
 
 if ! findmnt "${backup_disk_mountpoint}"; then
-    printf 'nothing seems to be mounted at %s\n' "${backup_disk_mountpoint}"
+    printf 'Nothing seems to be mounted at %s\n' "${backup_disk_mountpoint}"
     exit 1
 fi
 
-# The partition should have been mounted at /mnt/backup by now.
+shopt -u dotglob
 
-rsync -av --sparse --delete-after "${list_1[@]}" "${list_2[@]}" "${backup_disk_mountpoint}/raghu/"
+dirs=(
+    "${HOME}"/*
+    "${HOME}/.android"
+    "${HOME}/.dosbox"
+    "${HOME}/.mozilla"
+)
+
+rsync -a -v --sparse --delete-after "${dirs[@]}" "${backup_disk_mountpoint}/raghu/"
