@@ -16,10 +16,6 @@ from datetime import datetime
 from pytz import utc, timezone, UnknownTimeZoneError
 
 
-def emit_warning(message):
-    print(f"[WARNING] {message}", file=sys.stderr)
-
-
 def main():
     default_timezone = "Etc/UTC"
 
@@ -56,29 +52,29 @@ def main():
     parser.add_argument(
         "-o",
         "--output-format",
-        default="%Y-%m-%d %H:%M:%S %Z(UTC%z)",
+        default="%Y-%m-%d %H:%M:%S %z %Z",
         required=False,
         help="output format (strftime)",
     )
     args = parser.parse_args()
 
+    ret = 0
     in_format = args.input_format
     out_format = args.output_format
 
     try:
         input_timezone = timezone(args.in_timezone)
-    except UnknownTimeZoneError:
-        emit_warning(
-            f"Unknown timezone '{args.in_timezone}'; assuming {default_timezone}"
-        )
-        input_timezone = timezone(default_timezone)
+    except UnknownTimeZoneError as err:
+        print(f"timezone: {err}", file=sys.stderr)
+        ret = 2
+        return ret
 
     try:
         moment = datetime.strptime(args.moment, in_format)
-    except (KeyError, ValueError):
-        emit_warning(f"Cannot understand '{args.moment}'; using current system time")
-        moment = datetime.utcnow()
-        input_timezone = utc
+    except (KeyError, ValueError) as err:
+        print(f"strptime: {err}", file=sys.stderr)
+        ret = 2
+        return ret
 
     moment = input_timezone.localize(moment)
     # Time delta between The UNIX Epoch and now.
@@ -94,13 +90,24 @@ def main():
         except UnknownTimeZoneError:
             unknown_tzs.append(tz)
     if any(unknown_tzs):
-        emit_warning(f"Unknown timezones: {unknown_tzs}")
+        print(f"unknown timezones: {unknown_tzs}")
+        ret = 1
+
     if not any(tzs):
         tzs = [timezone("Etc/UTC")]
 
     for tz in tzs:
-        print(f"{moment.astimezone(tz).strftime(out_format)} {tz}")
+        try:
+            m = moment.astimezone(tz)
+        except OverflowError as err:
+            print(f"(ERROR: {err}) {tz}")
+            ret = 1
+            continue
+        s = m.strftime(out_format)
+        print(f"{s} {tz}")
+
+    return ret
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

@@ -46,7 +46,7 @@ def main():
         "--time-format",
         required=False,
         type=str,
-        default="%F %a %T %Z(UTC%z)",
+        default="%F %a %T %z %Z",
         help="strftime format to display timestamp",
     )
     parser.add_argument(
@@ -75,6 +75,8 @@ def main():
     )
     args = parser.parse_args()
 
+    ret = 0
+
     # Work out the output timezones.
     tzs = []
     unknown_tzs = []
@@ -84,7 +86,8 @@ def main():
         except UnknownTimeZoneError:
             unknown_tzs.append(tz)
     if any(unknown_tzs):
-        print(f"[WARNING] Unknown timezones: {unknown_tzs}", file=sys.stderr)
+        print(f"WARNING: Unknown timezones: {unknown_tzs}", file=sys.stderr)
+        ret = 1
 
     unix_ts = int(args.unix_timestamp or time.time())
 
@@ -102,22 +105,33 @@ def main():
                 remaining_seconds = delta.seconds - (hours * 3600)
                 minutes = remaining_seconds // 60
                 seconds = remaining_seconds - (minutes * 60)
-                days_hours_minutes_seconds = (
-                    f" ({delta.days}d {hours}h {minutes}m {seconds}s)"
-                )
+                days_hours_minutes_seconds = f" ({delta.days}d {hours}h {minutes}m {seconds}s)"
             m += f" [now: {now}] [diff: {delta_seconds} seconds{days_hours_minutes_seconds}]"
         m += " UNIX"
         print(m, file=sys.stdout)
 
     tf = args.time_format
-    my_dt = datetime.utcfromtimestamp(unix_ts).replace(tzinfo=utc)
+    try:
+        my_dt = datetime.utcfromtimestamp(unix_ts).replace(tzinfo=utc)
+    except ValueError as err:
+        print(f"CRITICAL: translating {unix_ts}: {err}", file=sys.stderr)
+        ret = 2
+        return ret
+
     for tz in tzs:
-        m = my_dt.astimezone(tz).strftime(tf)
+        try:
+            m = my_dt.astimezone(tz).strftime(tf)
+        except OverflowError as err:
+            print(f"(ERROR: {err}) {tz}", file=sys.stderr)
+            ret = 1
+            continue
         if args.include_now_info:
             m += f" [now: {now_dt.astimezone(tz).strftime(tf)}]"
         m += " " + str(tz)
         print(m, file=sys.stdout)
 
+    return ret
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
