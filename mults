@@ -7,6 +7,13 @@ import argparse
 import sys
 
 
+def print_int(n):
+    if isinstance(n, int):
+        print(n, hex(n), oct(n))
+    else:
+        print(n)
+
+
 def multiples_by_upper_limit(number, lower_limit, upper_limit, remainder):
     # This check is valid because we are dealing with only natural
     # numbers.
@@ -110,7 +117,7 @@ def main():
             print(f"count: want non-zero natural number, got {count}", file=sys.stderr)
             return 1
         for x in multiples_by_count(number, lower_limit, count, remainder):
-            print(x)
+            print_int(x)
         return 0
 
     upper_limit = args.upper_limit
@@ -128,12 +135,12 @@ def main():
             )
             return 1
         for x in multiples_by_upper_limit(number, lower_limit, upper_limit, remainder):
-            print(x)
+            print_int(x)
         return 0
 
     # Both count and upper_limit are None.  Default to 10 multiples.
     for x in multiples_by_count(number, lower_limit, 10, remainder):
-        print(x)
+        print_int(x)
     return 0
 
 
