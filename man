@@ -10,13 +10,15 @@ if [ -z "${MANWIDTH}" ]; then
     # run in a subshell, tput reports an incorrect number of columns if its
     # stderr is redirected.
     cols="$(tput cols)"
-    if [ ${?} -eq 0 -a ${cols} -ge 80 ]; then
-        export MANWIDTH=80
-    else
-        # In some versions of man, if there are 65 to 80 columns on the screen,
-        # man still uses 80 columns.  Override this behavior by specifying
-        # MANWIDTH in such cases too.
-        export MANWIDTH=${cols}
+    if [ ${?} -eq 0 -a ${cols} -gt 10 ]; then
+        if [ ${cols} -ge 80 ]; then
+            export MANWIDTH=80
+        else
+            # In some versions of man, if there are 65 to 80 columns on the
+            # screen, man still uses 80 columns.  Override this behavior by
+            # specifying MANWIDTH in such cases too.
+            export MANWIDTH=${cols}
+        fi
     fi
 fi
 
