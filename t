@@ -8,7 +8,7 @@ import sys
 import time
 
 from datetime import datetime, timedelta
-from pytz import timezone, utc, UnknownTimeZoneError
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 
 def uniq_order_preserve(comma_separated_sequence):
@@ -54,7 +54,7 @@ def main():
         "--time-zones",
         required=False,
         type=str,
-        default="Etc/UTC,US/Pacific,US/Eastern,Asia/Kolkata",
+        default="Etc/UTC,America/Los_Angeles,America/New_York,Asia/Kolkata",
         help="timezones for which to display timestamps",
     )
     parser.add_argument(
@@ -82,17 +82,19 @@ def main():
     unknown_tzs = []
     for tz in uniq_order_preserve(args.time_zones):
         try:
-            tzs.append(timezone(tz.strip()))
-        except UnknownTimeZoneError:
+            tzs.append(ZoneInfo(tz.strip()))
+        except ZoneInfoNotFoundError:
             unknown_tzs.append(tz)
     if any(unknown_tzs):
         print(f"WARNING: Unknown timezones: {unknown_tzs}", file=sys.stderr)
         ret = 1
 
+    tz_utc = ZoneInfo("Etc/UTC")
+
     unix_ts = int(args.unix_timestamp or time.time())
 
     now = int(time.time())
-    now_dt = datetime.utcfromtimestamp(now).replace(tzinfo=utc)
+    now_dt = datetime.fromtimestamp(now, tz_utc)
 
     if args.include_epoch_info:
         m = str(unix_ts)
@@ -112,7 +114,7 @@ def main():
 
     tf = args.time_format
     try:
-        my_dt = datetime.utcfromtimestamp(unix_ts).replace(tzinfo=utc)
+        my_dt = datetime.fromtimestamp(unix_ts, tz_utc)
     except ValueError as err:
         print(f"CRITICAL: translating {unix_ts}: {err}", file=sys.stderr)
         ret = 2
