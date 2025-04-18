@@ -9,11 +9,10 @@
 
 import argparse
 import datetime
-import pytz
 import sys
 
-from datetime import datetime
-from pytz import utc, timezone, UnknownTimeZoneError
+from datetime import datetime, timezone, UTC
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 
 def main():
@@ -31,7 +30,7 @@ def main():
     parser.add_argument(
         "-z",
         "--timezones",
-        default="Etc/UTC,US/Pacific,US/Eastern,Asia/Kolkata",
+        default="Etc/UTC,America/Los_Angeles,America/New_York,Asia/Kolkata",
         required=False,
         help="the timezones to which to convert the specified moment",
     )
@@ -63,8 +62,8 @@ def main():
     out_format = args.output_format
 
     try:
-        input_timezone = timezone(args.in_timezone)
-    except UnknownTimeZoneError as err:
+        input_timezone = ZoneInfo(args.in_timezone)
+    except ZoneInfoNotFoundError as err:
         print(f"timezone: {err}", file=sys.stderr)
         ret = 2
         return ret
@@ -76,9 +75,12 @@ def main():
         ret = 2
         return ret
 
-    moment = input_timezone.localize(moment)
+    if (moment.tzinfo is None) or (moment.tzinfo.utcoffset(moment) is None):
+        moment = moment.replace(tzinfo=input_timezone)
+    # moment = input_timezone.localize(moment)
+
     # Time delta between The UNIX Epoch and now.
-    d = moment.astimezone(utc) - datetime(1970, 1, 1, 0, 0, 0, tzinfo=utc)
+    d = moment.astimezone(UTC) - datetime(1970, 1, 1, 0, 0, 0, tzinfo=UTC)
     print(f"{int(d.total_seconds())} UNIX")  # Ignore microseconds.
 
     # Work out which timezones we will be using.
@@ -86,8 +88,8 @@ def main():
     unknown_tzs = []
     for tz in args.timezones.split(","):
         try:
-            tzs.append(timezone(tz.strip()))
-        except UnknownTimeZoneError:
+            tzs.append(ZoneInfo(tz.strip()))
+        except ZoneInfoNotFoundError:
             unknown_tzs.append(tz)
     if any(unknown_tzs):
         print(f"unknown timezones: {unknown_tzs}")
