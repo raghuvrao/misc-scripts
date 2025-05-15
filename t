@@ -20,10 +20,31 @@ def uniq_order_preserve(comma_separated_sequence):
     seen_add = seen.add
     for x in comma_separated_sequence.split(","):
         x = x.strip()
-        if x in seen:
-            continue
-        seen_add(x)
-        yield x
+        if x not in seen:
+            seen_add(x)
+            yield x
+
+
+def mesg(prefix, message, f=sys.stdout):
+    pfx = f"{prefix}: " if prefix else ""
+    print(f"{pfx}{message}", file=f)
+
+
+def info(message):
+    mesg("INFO", message)
+
+
+def warning(message):
+    mesg("WARNING", message, sys.stderr)
+
+
+def error(message):
+    mesg("ERROR", message, sys.stderr)
+
+
+def critical(message):
+    mesg("CRITICAL", message, sys.stderr)
+    sys.exit(1)
 
 
 def main():
@@ -77,18 +98,6 @@ def main():
 
     ret = 0
 
-    # Work out the output timezones.
-    tzs = []
-    unknown_tzs = []
-    for tz in uniq_order_preserve(args.time_zones):
-        try:
-            tzs.append(ZoneInfo(tz.strip()))
-        except ZoneInfoNotFoundError:
-            unknown_tzs.append(tz)
-    if any(unknown_tzs):
-        print(f"WARNING: Unknown timezones: {unknown_tzs}", file=sys.stderr)
-        ret = 1
-
     tz_utc = ZoneInfo("Etc/UTC")
 
     unix_ts = int(args.unix_timestamp or time.time())
@@ -110,27 +119,30 @@ def main():
                 days_hours_minutes_seconds = f" ({delta.days}d {hours}h {minutes}m {seconds}s)"
             m += f" [now: {now}] [diff: {delta_seconds} seconds{days_hours_minutes_seconds}]"
         m += " UNIX"
-        print(m, file=sys.stdout)
+        print(m)
 
     tf = args.time_format
     try:
         my_dt = datetime.fromtimestamp(unix_ts, tz_utc)
     except ValueError as err:
-        print(f"CRITICAL: translating {unix_ts}: {err}", file=sys.stderr)
-        ret = 2
-        return ret
+        critical(f"translating {unix_ts}: {err}")
 
-    for tz in tzs:
+    for tz in uniq_order_preserve(args.time_zones):
         try:
-            m = my_dt.astimezone(tz).strftime(tf)
+            zone_info = ZoneInfo(tz)
+            m = my_dt.astimezone(zone_info).strftime(tf)
+        except ZoneInfoNotFoundError as err:
+            warning(f"{tz}: {err}")
+            ret = 3
+            continue
         except OverflowError as err:
-            print(f"(ERROR: {err}) {tz}", file=sys.stderr)
-            ret = 1
+            error(f"{err} {str(zone_info)}")
+            ret = 2
             continue
         if args.include_now_info:
-            m += f" [now: {now_dt.astimezone(tz).strftime(tf)}]"
-        m += " " + str(tz)
-        print(m, file=sys.stdout)
+            m += f" [now: {now_dt.astimezone(zone_info).strftime(tf)}]"
+        m += " " + str(zone_info)
+        print(m)
 
     return ret
 
