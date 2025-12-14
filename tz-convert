@@ -44,14 +44,14 @@ def main():
     parser.add_argument(
         "-i",
         "--input-format",
-        default="%Y-%m-%d-%H-%M-%S",
+        default="%Y-%m-%dT%H:%M:%S",
         required=False,
         help="input format (strftime)",
     )
     parser.add_argument(
         "-o",
         "--output-format",
-        default="%Y-%m-%d %H:%M:%S %z %Z",
+        default="%a %Y-%m-%dT%H:%M:%S%z (%Z)",
         required=False,
         help="output format (strftime)",
     )
