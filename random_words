@@ -25,43 +25,37 @@ def main():
     )
 
     args_parser.add_argument(
-        "-w",
-        "--words-file",
+        "-f", "--file",
         type=str,
         default="/usr/share/dict/words",
         help="path to words file",
     )
     args_parser.add_argument(
-        "-n",
-        "--words-per-set",
+        "-n", "--words-per-set",
         type=int,
         default=4,
         help="number of words per set",
     )
     args_parser.add_argument(
-        "-s",
-        "--word-sets",
+        "-s", "--sets",
         type=int,
         default=1,
         help="number of word sets",
     )
     args_parser.add_argument(
-        "-a",
-        "--searches-per-word",
+        "-a", "--searches-per-word",
         type=int,
         default=5,
         help="number of search attempts per word",
     )
     args_parser.add_argument(
-        "-m",
-        "--min-word-length",
+        "-m", "--min-word-length",
         type=int,
         default=4,
         help="minimum word length",
     )
     args_parser.add_argument(
-        "-p",
-        "--word-sep",
+        "-p", "--separator",
         type=str,
         default=None,
         help="character to use as word separator; None means any space",
@@ -71,32 +65,32 @@ def main():
 
     if (
         (args.words_per_set <= 0)
-        or (args.word_sets <= 0)
+        or (args.sets <= 0)
         or (args.searches_per_word <= 0)
     ):
         return
 
     words = []
 
-    with open(args.words_file, "r") as wf:
-        words = wf.read().split(sep=args.word_sep)
+    with open(args.file, "r") as wf:
+        words = wf.read().split(sep=args.separator)
 
     if not any(words):
-        raise TooFewWordsError(f"File '{args.words_file}' has no words")
+        raise TooFewWordsError(f"File '{args.file}' has no words")
 
     total_num_words = len(words)
 
     if total_num_words < args.words_per_set:
         raise TooFewWordsError(
-            f"Need at least {args.words_per_set} words; file '{args.words_file}' has only {total_num_words}",
+            f"Need at least {args.words_per_set} words; file '{args.file}' has only {total_num_words}",
         )
 
-    for _ in range(args.word_sets):
+    for _ in range(args.sets):
         out = set()
         for _ in range(args.words_per_set):
             word = None
             for _ in range(args.searches_per_word):
-                word = random.choice(words)
+                word = random.choice(words).removesuffix("'s")
                 if (len(word) < args.min_word_length) or (word in out):
                     word = None
                     continue
