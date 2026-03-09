@@ -70,7 +70,7 @@ def main():
     args = args_parser.parse_args()
 
     if args.min_word_length > args.max_word_length:
-        raise ArgumentError(
+        raise ValueError(
             f"minimum word length {args.min_word_length} greater than maximum word length {args.max_word_length}",
         )
 
