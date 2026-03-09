@@ -55,6 +55,12 @@ def main():
         help="minimum word length",
     )
     args_parser.add_argument(
+        "-x", "--max-word-length",
+        type=int,
+        default=20,
+        help="maximum word length",
+    )
+    args_parser.add_argument(
         "-p", "--separator",
         type=str,
         default=None,
@@ -62,6 +68,11 @@ def main():
     )
 
     args = args_parser.parse_args()
+
+    if args.min_word_length > args.max_word_length:
+        raise ArgumentError(
+            f"minimum word length {args.min_word_length} greater than maximum word length {args.max_word_length}",
+        )
 
     if (
         (args.words_per_set <= 0)
@@ -91,7 +102,11 @@ def main():
             word = None
             for _ in range(args.searches_per_word):
                 word = random.choice(words).removesuffix("'s")
-                if (len(word) < args.min_word_length) or (word in out):
+                if (
+                    (len(word) < args.min_word_length)
+                    or (len(word) > args.max_word_length)
+                    or (word in out)
+                ):
                     word = None
                     continue
                 break
