@@ -4,21 +4,11 @@
 # So, exporting variables in this script will not affect the parent shell.
 
 if [ -z "${MANWIDTH}" ]; then
-    # Using $COLUMNS is unreliable because it may not be present if the shell
-    # is non-interactive; 'tput cols' seems to be more reliable.  Do not
-    # redirect tput's stderr below: in some versions of ncurses, when tput is
-    # run in a subshell, tput reports an incorrect number of columns if its
-    # stderr is redirected.
-    cols="$(tput cols)"
-    if [ ${?} -eq 0 -a ${cols} -gt 10 ]; then
-        if [ ${cols} -ge 80 ]; then
-            export MANWIDTH=80
-        else
-            # In some versions of man, if there are 65 to 80 columns on the
-            # screen, man still uses 80 columns.  Override this behavior by
-            # specifying MANWIDTH in such cases too.
-            export MANWIDTH=${cols}
-        fi
+    # Using COLUMNS is unreliable because it may not be present if the shell is
+    # non-interactive; 'tput cols' seems to be more reliable.
+    c="`tput cols 2>/dev/null`"
+    if [ $? -eq 0 -a $c -gt 80 ]; then
+        export MANWIDTH=80
     fi
 fi
 
